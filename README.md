@@ -9,7 +9,7 @@ The sample uses node.js with socket.io as signaling server. It will just run eit
 
 The intention was to provide a very compact sample which may be used as a starting point for more complex WebRTC projects. The samples which are normally available in the WEB do often not provide a real signaling server and try to simulate both peers of a connection in one client app. That makes the interpretation which signaling information is transported in which direction confusing. Other expamples provide tons of code including css, error handling or additional functionality which is not necessary to explain the basic principles. That sample demonstrates the important parts in less then 100 lines of code. 
 
-This should help the beginner as a starting point. 
+This should help the beginner as a starting point. The belonging tutorial can be found at [here](https://melavi.de/811/).
 
 ### Tech
 
