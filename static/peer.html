@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+        var SignalingServer = {
+			socket  : null,
+			Connect : function (cb) {
+				this.socket = io.connect("http://" + location.hostname + ":7000");
+				this.socket.on('msg', function (msg) { cb(msg);	});
+			},
+			Send    : function(msg) { this.socket.emit('msg',msg); }
+		};		
+
+        SignalingServer.Connect(onSignaling);
+        var pc = new webkitRTCPeerConnection({ iceServers: [] });
+        pc.onicecandidate = function (event) {
+            if (event.candidate != null) SignalingServer.Send(JSON.stringify({ 'candidate': event.candidate }));
+        };
+        pc.onaddstream = function (event) {
+            $("#remvideo").attr("src", window.URL.createObjectURL(event.stream));
+        };
+
+        $(document).ready(function() {                	        	
+        	navigator.webkitGetUserMedia({ video: true, audio: true }, 
+                function (stream) {
+                    $("#locvideo").attr("src", window.URL.createObjectURL(stream));
+                    pc.addStream(stream);
+                },
+                function () { console.log("ERROR"); }
+            );
+        });
+        
+        function SendSDP(data) {
+        	pc.setLocalDescription(data);
+        	SignalingServer.Send(JSON.stringify({ 'sdp': data }));
+        };
+        
+        function Dial() {
+        	pc.createOffer(SendSDP);
+        };
+        
+        function onSignaling(msg) {			
+        	var signal = JSON.parse(msg);
+        	if (signal.sdp) {
+        		pc.setRemoteDescription(new RTCSessionDescription(signal.sdp));		
+        		if (signal.sdp.type == "offer") pc.createAnswer(SendSDP);
+        	} else if (signal.candidate) 
+        		pc.addIceCandidate(new RTCIceCandidate(signal.candidate));			
+        };
+	</script>	
+</head>
+
+<body>
+	<h2>WebRTC P2P - Socket.IO signaling</h2>
+	<button onclick="Dial();" style="width:80px;">Dial</button><br /><br />
+    <video id="locvideo" autoplay="autoplay" style="width:128px; height:96px; border:1px solid black;"></video>
+    <video id="remvideo" autoplay="autoplay" style="width:128px; height:96px; border:1px solid black;"></video>
+</body>
+</html>
