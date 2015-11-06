@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
         var SignalingServer = {
 			socket  : null,
 			Connect : function (cb) {
-				this.socket = io.connect("http://" + location.hostname + ":7000");
+				this.socket = io.connect("https://" + location.hostname + ":7000");
 				this.socket.on('msg', function (msg) { cb(msg);	});
 			},
 			Send    : function(msg) { this.socket.emit('msg',msg); }
@@ -55,7 +55,9 @@
 <body>
 	<h2>WebRTC P2P - Socket.IO signaling</h2>
 	<button onclick="Dial();" style="width:80px;">Dial</button><br /><br />
-    <video id="locvideo" autoplay="autoplay" style="width:128px; height:96px; border:1px solid black;"></video>
-    <video id="remvideo" autoplay="autoplay" style="width:128px; height:96px; border:1px solid black;"></video>
+    <p>local video</p>
+    <video id="locvideo" autoplay="autoplay" style="width:320px; height:240px; border:1px solid black;"></video>
+    <p>remote video</p>
+    <video id="remvideo" autoplay="autoplay" style="width:320px; height:240px; border:1px solid black;"></video>
 </body>
 </html>

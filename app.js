@@ -1,9 +1,17 @@
-﻿var express = require("express");
-var io      = require('socket.io');
+﻿var fs      = require("fs");
+var https   = require("https");
+var express = require("express");
+var io      = require("socket.io");
 
+// setup https express WebServer and WebSocket Server
 var app = express();
+var webServer = https.createServer(
+    {
+        key  : fs.readFileSync("server.key"),
+        cert : fs.readFileSync("server.crt")
+    }, app).listen(7000);
 app.use(express.static(__dirname + "/static/"));
-var SocketServer = io.listen(app.listen(7000));
+var SocketServer = io.listen(webServer);
 
 var PeerASockIO = null, PeerBSockIO = null;
 
